@@ -2,7 +2,7 @@ const fs  = require("fs")
 
 const addFile = (data)=>{
 
-    const allData = loadData()
+    let allData = loadData()
 
     const duplicate =  allData.find(ele=>{
         return ele.name===data.name
@@ -11,7 +11,6 @@ const addFile = (data)=>{
     if(duplicate)
     {
         console.log("User alredy exist !!!");
-        
         return
     }
     
@@ -32,6 +31,26 @@ const viewFile = ()=>{
     const alldata =  loadData()
     console.log(alldata);
     
+
+    
+}
+
+const removeData = (name)=>{
+
+    let alldata = loadData()
+
+    alldata = alldata.filter(ele=>{
+        return ele.name !=name
+    })
+
+    const newData = JSON.stringify(alldata)
+    fs.writeFile("data.json",newData,(err)=>{
+        if(err)
+            console.log(err);
+        console.log("Data deleted successfully !!!");
+        
+    })
+
 }
 
 
@@ -47,4 +66,4 @@ const loadData = ()=>{
     
 }
 
-module.exports={addFile,viewFile}
+module.exports={addFile,viewFile,removeData}
