@@ -35,5 +35,38 @@ const addUser = ()=>{
     })
 }
 
+const addManyUsers = async ()=>{
 
-addUser()
+    u1 = new User({name:"Kajal",email:"kajal@gmail.com",age:22})
+    u2 = new User({name:"Nidhi",email:"nidhi@gmail.com",age:22})
+    // User.insertMany([u1,u2]).then(result=>{
+    //     console.log(result);
+        
+    // }).catch(err=>{
+    //     console.log(err);
+        
+    // })   
+    try {
+        const result = await User.insertMany([u1,u2])
+        console.log(result);
+        
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+const viewUser = async ()=>{
+    try {
+        const u =await User.find()
+        console.log(u);
+    } catch (error) {
+        
+    }
+}
+
+
+
+// addUser()
+// addManyUsers()
+viewUser()
