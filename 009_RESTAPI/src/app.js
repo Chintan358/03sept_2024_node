@@ -7,6 +7,8 @@ const DBURL = process.env.DBURL
 
 const mongoose = require("mongoose")
 
+app.use(express.json())
+
 mongoose.connect(DBURL).then(()=>{
     console.log("DB connected..."); 
 }).catch(err=>{
@@ -49,7 +51,9 @@ app.get("/employees",async (req,resp)=>{
 
 })
 
-app.post("/tasks",async(req,resp)=>{
+app.post("/employees",async(req,resp)=>{
+    
+    console.log(req.body);
     
     try {
         const p1 = new Employee(req.body)
@@ -62,12 +66,27 @@ app.post("/tasks",async(req,resp)=>{
 
  })
 
- app.put("/tasks",(req,resp)=>{
-    resp.send("put api calling....")
+ app.put("/employees",async(req,resp)=>{
+    
+    try {
+        const data =  await Employee.findByIdAndUpdate(req.query.id,req.body)
+       resp.send(data)
+        
+    } catch (error) {
+        resp.send
+        
+    }
+
  })
 
- app.delete("/tasks",(req,resp)=>{
-    resp.send("delete api calling....")
+ app.delete("/employees",async(req,resp)=>{
+    
+    try {
+        const data  =await Employee.findByIdAndDelete(req.query.id)
+        resp.send(data)
+    } catch (error) {
+        resp.send(error)
+    }
  })
  
  
