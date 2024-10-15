@@ -4,7 +4,7 @@ const mongoose = require("mongoose")
 
 const PORT = process.env.PORT || 3000
 const DBURL = process.env.DBURL
-console.log(DBURL);
+
 
 app.use(express.json())
 
@@ -15,7 +15,8 @@ mongoose.connect("mongodb://127.0.0.1:27017/tops").then(()=>{
     
 })
 
-app.use("/",require("../router/productrouter"))
+app.use("/products",require("../router/productrouter"))
+app.use("/categories",require("../router/categoryrouter"))
 
 
 app.listen(PORT,()=>{
