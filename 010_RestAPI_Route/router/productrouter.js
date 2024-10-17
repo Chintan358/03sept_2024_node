@@ -6,7 +6,7 @@ const Product = require("../model/products")
 router.get("/",async(req,resp)=>{
    
     try {
-        const products = await Product.find()
+        const products = await Product.find().populate('category')
         resp.send(products)
     } catch (error) {
         resp.send(error)
