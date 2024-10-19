@@ -1,5 +1,4 @@
 const express = require("express")
-const { models } = require("mongoose")
 const router = express.Router()
 const Product = require("../model/products")
 

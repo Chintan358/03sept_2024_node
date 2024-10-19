@@ -3,7 +3,7 @@ const express = require("express")
 const router = express.Router()
 
 const User = require("../model/users")
-
+const bcrypt = require("bcryptjs")
 
 router.get("/", async (req,resp)=>{
     try {
@@ -15,7 +15,11 @@ router.get("/", async (req,resp)=>{
 })
 
 router.post("/", async (req,resp)=>{
+
+    req.body.password = await bcrypt.hash(req.body.password,10)
+
     const user = new User(req.body)
+    
     try {
         const newUser = await user.save()
         resp.send(newUser)
@@ -52,6 +56,23 @@ router.delete("/:id", async (req,resp)=>{
     } catch (error) {
         resp.send(error)
     }
+})
+
+router.post("/login",async(req,resp)=>{
+    try {
+        
+        const user = await User.findOne({email:req.body.email})
+        if(!user) return resp.status(400).send("Invalid email or password")
+
+        const validPass = await bcrypt.compare(req.body.password,user.password)
+        if(!validPass) return resp.status(400).send("Invalid email or password")
+
+        resp.send("Login success : welcome : "+user.name)
+
+    } catch (error) {
+        resp.send("Invalid email or password")
+    }
+   
 })
 
 
