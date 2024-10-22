@@ -19,6 +19,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/tops").then(()=>{
 app.use("/products",require("../router/productrouter"))
 app.use("/categories",require("../router/categoryrouter"))
 app.use("/users",require("../router/userrouter"))
+app.use("/carts",require("../router/cartrouter"))
 
 
 app.listen(PORT,()=>{
