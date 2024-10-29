@@ -4,9 +4,12 @@ const router = express.Router()
 
 const User = require("../model/users")
 const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
+const auth = require("../middleware/auth")
 
-router.get("/", async (req,resp)=>{
+router.get("/",auth,async (req,resp)=>{
     try {
+
         const users = await User.find()
         resp.send(users)
     } catch (error) {
@@ -14,7 +17,7 @@ router.get("/", async (req,resp)=>{
     }
 })
 
-router.post("/", async (req,resp)=>{
+router.post("/", auth,async (req,resp)=>{
 
     req.body.password = await bcrypt.hash(req.body.password,10)
 
@@ -67,7 +70,8 @@ router.post("/login",async(req,resp)=>{
         const validPass = await bcrypt.compare(req.body.password,user.password)
         if(!validPass) return resp.status(400).send("Invalid email or password")
 
-        resp.send("Login success : welcome : "+user.name)
+        const token = jwt.sign({_id:user._id},process.env.TOKEN_SECRET)
+        resp.send(`Welcome : ${user.name} your secret token for access all secure api is : auth-token -  ${token}`)
 
     } catch (error) {
         resp.send("Invalid email or password")

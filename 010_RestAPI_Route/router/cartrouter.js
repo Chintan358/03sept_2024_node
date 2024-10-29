@@ -2,11 +2,15 @@ const express = require("express")
 const router = express.Router()
 
 const Cart = require("../model/carts")
+const auth = require("../middleware/auth")
+router.post("/",auth,async(req,resp)=>{
 
-router.post("/",async(req,resp)=>{
+    const user =  req.user;
+    //console.log(user);
+    
 
     try {
-        const cart = new Cart(req.body)
+        const cart = new Cart({products:req.body.products,qty : req.body.qty,users:user._id})
         const data = await cart.save()
         resp.send(data)
     } catch (error) {
@@ -25,7 +29,7 @@ router.get("/:id",async(req,resp)=>{
     }
 })
 
-router.get("/",async(req,resp)=>{
+router.get("/",auth,async(req,resp)=>{
     try {
         const carts = await Cart.find().populate("products").populate("users")
         resp.send(carts)
@@ -34,9 +38,14 @@ router.get("/",async(req,resp)=>{
     }
 })
 
-router.get("/users/:id",async(req,resp)=>{
+router.get("/users/id",auth,async(req,resp)=>{
+    console.log("user calling...");
+    
+    const user = req.user
+ 
+    
     try {
-        const carts = await Cart.find({users:req.params.id}).populate("products").populate("users")
+        const carts = await Cart.find({users:user._id}).populate("products").populate("users")
         resp.send(carts)
     } catch (error) {
         resp.send(error)
