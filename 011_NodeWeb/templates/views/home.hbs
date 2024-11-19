@@ -27,8 +27,8 @@
             <td>{{this.name}}</td>
             <td>{{this.email}}</td>
             <td>{{this.phone}}</td>
-            <td><a class="btn btn-danger">Delete</a></td>
-            <td><a class="btn btn-primary">Update</a></td>
+            <td><a href="delete?id={{this._id}}" class="btn btn-danger">Delete</a></td>
+            <td><a href="update?id={{this._id}}" class="btn btn-primary">Update</a></td>
         </tr>
         {{/each}}
     </table>
