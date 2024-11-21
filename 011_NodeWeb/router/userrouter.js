@@ -1,6 +1,9 @@
 const express = require("express")
 const User = require("../model/users")
 const router = express.Router()
+const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
+const auth = require("../middleware/auth")
 
 router.get("/",(req,resp)=>{
     resp.render("index")
@@ -29,7 +32,7 @@ router.post("/reg",async(req,resp)=>{
     
 })
 
-router.get("/home",async(req,resp)=>{
+router.get("/home",auth,async(req,resp)=>{
     try {
         const users = await User.find()
         resp.render("home",{"data":users})
@@ -60,6 +63,39 @@ router.get("/update",async(req,resp)=>{
         
     }
 })
+
+router.get("/login",(req,resp)=>{
+    resp.render("login");
+})
+
+router.post("/userlogin",async(req,resp)=>{
+
+    try {
+        const user = await User.findOne({email:req.body.email})
+        if(user){
+
+            isValid = await bcrypt.compare(req.body.password,user.password)
+            if(isValid)
+            {
+                const token = await jwt.sign({_id:user._id},process.env.S_KEY)
+                resp.cookie("token",token)
+                resp.redirect("home")
+            }
+            else
+            {
+                resp.render("login",{"err":"Invalid email or password"})
+            }
+           
+        } else {
+            resp.render("login",{"err":"Invalid email or password"})
+        }
+    } catch (error) {
+        resp.render("login",{"err":"Something went wrong"})
+    }})
+        
+   
+
+
 
 
 module.exports = router
