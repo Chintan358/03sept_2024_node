@@ -77,7 +77,10 @@ router.post("/userlogin",async(req,resp)=>{
             isValid = await bcrypt.compare(req.body.password,user.password)
             if(isValid)
             {
-                const token = await jwt.sign({_id:user._id},process.env.S_KEY)
+                // const token = await jwt.sign({_id:user._id},process.env.S_KEY)
+
+                const token = await user.generateToken();
+               
                 resp.cookie("token",token)
                 resp.redirect("home")
             }
@@ -90,6 +93,8 @@ router.post("/userlogin",async(req,resp)=>{
             resp.render("login",{"err":"Invalid email or password"})
         }
     } catch (error) {
+        console.log(error);
+        
         resp.render("login",{"err":"Something went wrong"})
     }})
         
