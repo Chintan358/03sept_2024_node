@@ -41,7 +41,7 @@ router.get("/home",auth,async(req,resp)=>{
     }
 })
 
-router.get("/delete",async(req,resp)=>{
+router.get("/delete",auth,async(req,resp)=>{
    
     const id =  req.query.id
     try {
@@ -54,7 +54,7 @@ router.get("/delete",async(req,resp)=>{
     
 })
 
-router.get("/update",async(req,resp)=>{
+router.get("/update",auth,async(req,resp)=>{
     const id =  req.query.id
     try {
         const user = await User.findById(id)
@@ -72,6 +72,16 @@ router.post("/userlogin",async(req,resp)=>{
 
     try {
         const user = await User.findOne({email:req.body.email})
+
+        if(user.Tokens.length>=3)
+        {
+            resp.render("login",{"err":"Max user limit reached !!!!"})
+            return;
+        }
+        
+
+
+
         if(user){
 
             isValid = await bcrypt.compare(req.body.password,user.password)
@@ -99,6 +109,32 @@ router.post("/userlogin",async(req,resp)=>{
     }})
         
    
+router.get("/logout",auth,(req,resp)=>{
+
+    const user = req.user
+    const token = req.token
+
+    
+    user.Tokens =  user.Tokens.filter(ele=>{
+        return ele.token != token
+    })
+    user.save()
+    resp.clearCookie("token")
+    resp.render("login")
+})
+
+router.get("/logoutall",auth,(req,resp)=>{
+
+    const user = req.user
+    const token = req.token
+
+    
+    user.Tokens =  [];
+    user.save()
+    resp.clearCookie("token")
+    resp.render("login")
+})
+
 
 
 
