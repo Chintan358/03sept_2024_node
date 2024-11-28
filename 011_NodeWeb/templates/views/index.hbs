@@ -19,7 +19,7 @@
             <hr>
             <span class="text-success">{{msg}}</span>
              <span class="text-danger">{{err}}</span>
-            <form action="reg" method="post">
+            <form action="reg" method="post" enctype="multipart/form-data">
                 <input type="hidden" value="{{data._id}}" name="id">
                 <div class="form-group">
                     <label for="name">Username</label>
@@ -38,6 +38,11 @@
                 <div class="form-group">
                     <label for="pass">Password</label>
                     <input type="password" class="form-control" id="pass" placeholder="Password" name="password" >
+                </div>
+
+                <div class="form-group">
+                    <label for="img">Image</label>
+                    <input type="file" class="form-control" id="img"  name="file" >
                 </div>
                 <br>
                 <button type="submit" class="btn btn-primary">Submit</button>

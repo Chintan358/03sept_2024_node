@@ -4,23 +4,43 @@ const router = express.Router()
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const auth = require("../middleware/auth")
+const multer=require("multer")
+const fs = require("fs")
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "./public/upload");
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + "-" + Date.now() + ".jpg");
+    }
+});
+
+const upload = multer({
+    storage: storage,
+})
+
+
 
 router.get("/",(req,resp)=>{
     resp.render("index")
 })
 
-router.post("/reg",async(req,resp)=>{
+router.post("/reg",upload.single("file"),async(req,resp)=>{
    
     try {
 
         id = req.body.id;
+       
+        
 
         if(id){
-            const user = await User.findByIdAndUpdate(id,req.body)
+            const user = await User.findByIdAndUpdate(id,{name:req.body.name, email:req.body.email,password:req.body.password, phone:req.body.phone,image:req.file.filename})
+            fs.unlinkSync(`./public/upload/${user.image}`)
             resp.render("index",{"msg":"Update successfully !!!!"})
         } else {
 
-        const user = new User(req.body)
+        const user = new User({name:req.body.name, email:req.body.email,password:req.body.password, phone:req.body.phone,image:req.file.filename})
         await user.save()
         resp.render("index",{"msg":"Registration successfully !!!!"})
         }
@@ -46,6 +66,7 @@ router.get("/delete",auth,async(req,resp)=>{
     const id =  req.query.id
     try {
         const dt = await User.findByIdAndDelete(id)
+        fs.unlinkSync(`./public/upload/${dt.image}`)
         resp.redirect("home")
     } catch (error) {
         

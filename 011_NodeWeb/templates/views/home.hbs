@@ -20,6 +20,7 @@
             <th>Username</th>
             <th>Email</th>
             <th>Phone</th>
+            <th>Image</th>
             <th colspan="2">Action</th>
         </tr>
         {{#each data}}
@@ -27,6 +28,7 @@
             <td>{{this.name}}</td>
             <td>{{this.email}}</td>
             <td>{{this.phone}}</td>
+            <td><img src="upload/{{image}}" alt="{{image}}" width="50px" height="50px"></td>
             <td><a href="delete?id={{this._id}}" class="btn btn-danger">Delete</a></td>
             <td><a href="update?id={{this._id}}" class="btn btn-primary">Update</a></td>
         </tr>
