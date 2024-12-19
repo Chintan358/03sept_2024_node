@@ -195,12 +195,15 @@
                      
                     </div>
                     <div class="card-body">
-                      <form>
+                      <form action="addproducts" method="post" enctype="multipart/form-data">
                         <div class="row mb-3">
                           <label class="col-sm-2 col-form-label" for="basic-default-name">Category Name</label>
                           <div class="col-sm-10">
-                            <select class="form-control" id="basic-default-name">
+                            <select class="form-control" id="basic-default-name" name="category">
                               <option value="0">---Select Category---</option>
+                              {{#each categories}}
+                              <option value="{{this._id}}">{{this.categoryName}}</option>
+                              {{/each}}
                               </select>
                           </div>
                         </div>
@@ -208,28 +211,28 @@
                         <div class="row mb-3">
                           <label class="col-sm-2 col-form-label" for="basic-default-name">Product Name</label>
                           <div class="col-sm-10">
-                            <input type="text" class="form-control" id="basic-default-name" placeholder="Eg. Fan, Pen, shirt, Cap">
+                            <input type="text" name="productname" class="form-control" id="basic-default-name" placeholder="Eg. Fan, Pen, shirt, Cap">
                           </div>
                         </div>
 
                         <div class="row mb-3">
                           <label class="col-sm-2 col-form-label" for="basic-default-name">Price</label>
                           <div class="col-sm-10">
-                            <input type="text" class="form-control" id="basic-default-name" placeholder="Eg. 200, 300, 400">
+                            <input type="text" class="form-control"  name="price" id="basic-default-name" placeholder="Eg. 200, 300, 400">
                           </div>
                         </div>
 
                         <div class="row mb-3">
                           <label class="col-sm-2 col-form-label" for="basic-default-name">Quantity</label>
                           <div class="col-sm-10">
-                            <input type="text" class="form-control" id="basic-default-name" placeholder="Eg. 1, 2, 5">
+                            <input type="text" class="form-control" name="qty" id="basic-default-name" placeholder="Eg. 1, 2, 5">
                           </div>
                         </div>
 
                         <div class="row mb-3">
                           <label class="col-sm-2 col-form-label" for="basic-default-name">Image</label>
                           <div class="col-sm-10">
-                            <input type="file" class="form-control" id="basic-default-name" >
+                            <input type="file" class="form-control" name="file" id="basic-default-name" >
                           </div>
                         </div>
                        
@@ -266,14 +269,18 @@
                       </tr>
                     </thead>
                     <tbody class="table-border-bottom-0">
+                      {{#each products}}
                       <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        
+                        <td>{{@index}}</td>
+                        <td>{{this.category.categoryName}}</td>
+                        <td>{{this.productName}}</td>
+                        <td>{{this.price}}</td>
+                        <td>{{this.qty}}</td>
+                        <td><img src="product_images/{{this.Image}}" alt="{{this.Image}}" height="50px" width="50px"></td>
+                        <td><a href="deleteProduct?pid={{this._id}}" class="btn btn-danger">Delete</a></td>
+                        <td><a href="editProduct?pid={{this._id}}" class="btn btn-primary">Edit</a></td>
                       </tr>
-                      
+                      {{/each}}
                     </tbody>
                   </table>
                 </div>

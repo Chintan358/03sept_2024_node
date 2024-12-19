@@ -5,13 +5,32 @@ const User = require("../model/users")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const auth = require("../middleware/auth")
+const Category = require("../model/categories")
+const Product = require("../model/products")
 
 router.get("/", (req, resp) => {
     resp.redirect("index")
 })
 
-router.get("/index", (req, resp) => {
-    resp.render("index")
+router.get("/index", async (req, resp) => {
+
+    try {
+
+        const categories = await Category.aggregate([{
+            $lookup: {
+                from: "products",
+                localField: "_id",
+                foreignField: "category",
+                as: "products"
+            }
+        }])
+
+        const products = await Product.find()
+        resp.render("index", { categories: categories, products: products })
+    } catch (error) {
+
+    }
+
 })
 
 router.get("/shop", (req, resp) => {
