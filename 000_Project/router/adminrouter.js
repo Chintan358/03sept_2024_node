@@ -174,6 +174,17 @@ router.post("/addproducts", upload.single("file"), async (req, resp) => {
     }
 })
 
+
+router.get("/deleteProduct", async (req, resp) => {
+    try {
+        const deletedProd = await Product.findByIdAndDelete(req.query.pid)
+
+        resp.redirect("products")
+    } catch (error) {
+
+    }
+})
+
 //*************product end*************** */
 
 router.get("/orders", async (req, resp) => {
@@ -183,6 +194,8 @@ router.get("/orders", async (req, resp) => {
 
     }
 })
+
+
 
 
 

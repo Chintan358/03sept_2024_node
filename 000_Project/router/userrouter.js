@@ -45,9 +45,7 @@ router.get("/contact", (req, resp) => {
     resp.render("contact")
 })
 
-router.get("/cart", auth, (req, resp) => {
-    resp.render("cart")
-})
+
 
 router.get("/login", (req, resp) => {
     resp.render("login")
@@ -99,9 +97,56 @@ router.get("/logout", auth, (req, resp) => {
     resp.redirect("index")
 })
 
+//**********************cart********************* */
+const Cart = require("../model/carts")
+router.get("/cart", auth, async (req, resp) => {
+
+    try {
+        const cartdata = await Cart.find({ user: req.user._id }).populate("product")
+        console.log(cartdata);
+
+        resp.render("cart", { cartdata: cartdata })
+    } catch (error) {
+
+    }
+
+})
+
+router.get("/addtocart", auth, async (req, resp) => {
+
+
+    try {
+
+        pid = req.query.pid
+        uid = req.user._id
+
+        const exists = await Cart.find({ user: uid, product: pid })
+        if (exists.length == 0) {
+            const cart = new Cart({ user: uid, product: pid, qty: 1 })
+            await cart.save()
+            resp.send("Product added to cart")
+        }
+        else {
+            resp.send("Product alredy exist in cart!!!")
+        }
 
 
 
+    } catch (error) {
+        console.log(error);
 
+    }
+})
+
+
+router.get("/removecart", auth, async (req, resp) => {
+    try {
+        await Cart.findByIdAndDelete(req.query.cartid)
+        resp.send("Product removed from cart!!!")
+    } catch (error) {
+        console.log(error);
+
+    }
+})
 
 module.exports = router
