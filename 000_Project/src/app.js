@@ -16,6 +16,14 @@ mongoose.connect(DB_URL).then(() => {
 
 })
 
+hbs.registerHelper("multiple", function (index, value) {
+    return index * value;
+})
+
+hbs.registerHelper("total", function (index, value) {
+    
+    return index * value;
+})
 
 const viewpath = path.join(__dirname, "../templates/views")
 const partialpath = path.join(__dirname, "../templates/partials")

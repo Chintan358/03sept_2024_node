@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken")
 const auth = require("../middleware/auth")
 const Category = require("../model/categories")
 const Product = require("../model/products")
+const Razorpay = require("razorpay")
 
 router.get("/", (req, resp) => {
     resp.redirect("index")
@@ -103,9 +104,15 @@ router.get("/cart", auth, async (req, resp) => {
 
     try {
         const cartdata = await Cart.find({ user: req.user._id }).populate("product")
-        console.log(cartdata);
 
-        resp.render("cart", { cartdata: cartdata })
+        var sum = 0
+        cartdata.map(ele => {
+            sum = sum + (ele.product.price * ele.qty);
+        })
+
+        const totalItem = cartdata.length
+
+        resp.render("cart", { cartdata: cartdata, sum: sum, totalItem: totalItem })
     } catch (error) {
 
     }
@@ -149,4 +156,46 @@ router.get("/removecart", auth, async (req, resp) => {
     }
 })
 
+router.get("/changeQty", async (req, resp) => {
+    try {
+
+        const cartdata = await Cart.findById(req.query.cartid)
+        const newQty = cartdata.qty + Number(req.query.qty)
+        if (newQty <= 0) {
+            return
+        }
+        await Cart.findByIdAndUpdate(req.query.cartid, { qty: newQty })
+
+        resp.send("qty updated")
+    } catch (error) {
+        console.log(error);
+
+    }
+})
+
+
+router.get("/payment", (req, resp) => {
+
+    const amt = Number(req.query.amt)
+
+
+    var instance = new Razorpay({
+        key_id: 'rzp_test_9i2ehhzfi6wVzA',
+        key_secret: '829D6edUREQeGbM2ykIqeq5F',
+    });
+
+    var options = {
+        amount: amt * 100,  // amount in the smallest currency unit
+        currency: "INR",
+        receipt: "order_rcptid_11"
+    };
+
+    instance.orders.create(options, function (err, order) {
+
+        resp.send(order)
+
+
+    });
+
+})
 module.exports = router
