@@ -124,7 +124,7 @@
                     <div class="card-footer border-secondary bg-transparent">
                         <div class="d-flex justify-content-between mt-2">
                             <h5 class="font-weight-bold">Total</h5>
-                            <h5 class="font-weight-bold" id="amt">`{{sum}}</h5>
+                            <h5 class="font-weight-bold" id="amt">{{sum}}</h5>
                         </div>
                         <button class="btn btn-block btn-primary my-3 py-3" id="rzp-button1">Proceed To
                             Checkout</button>
@@ -246,7 +246,7 @@
             e.preventDefault();
 
             const amt = document.getElementById("amt").innerHTML
-            alert(amt)
+
             fetch(`/payment?amt=${amt}`).then(data => {
                 return data.json()
             }).then(result => {
@@ -259,7 +259,13 @@
                     "description": "Test Transaction",
                     "image": "https://example.com/your_logo",
                     "order_id": result.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-                    "callback_url": "https://eneqd3r9zrjok.x.pipedream.net/",
+                    "handler": function (response) {
+
+                        $.get("createorder", { pid: response.razorpay_payment_id }, function (rt) {
+                            alert(rt)
+                            location.reload()
+                        })
+                    },
                     "prefill": {
                         "name": "Gaurav Kumar",
                         "email": "gaurav.kumar@example.com",

@@ -8,6 +8,16 @@ const auth = require("../middleware/auth")
 const Category = require("../model/categories")
 const Product = require("../model/products")
 const Razorpay = require("razorpay")
+const nodemailer = require("nodemailer")
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'chintan.tops@gmail.com',
+        pass: 'dejl icyq qrel gyyf'
+    }
+});
+
 
 router.get("/", (req, resp) => {
     resp.redirect("index")
@@ -197,5 +207,59 @@ router.get("/payment", (req, resp) => {
 
     });
 
+})
+
+//****************************************** */
+const Order = require("../model/orders")
+// const { default: customers } = require("razorpay/dist/types/customers")
+router.get("/createorder", auth, async (req, resp) => {
+
+
+    try {
+        const payid = req.query.pid
+        const uid = req.user._id
+        const cartdata = await Cart.find({ user: uid }).populate("product")
+
+        currentProducts = []
+        var rows = ""
+        var id = 1
+        var total = 0
+        cartdata.map(data => {
+            p = {
+                name: data.product.productName,
+                price: data.product.price,
+                qty: data.qty
+            }
+            var subtotal = data.qty * data.product.price
+            total += subtotal
+            rows += "<tr><td>" + id + "</td><td>" + data.product.productName + "</td><td>" + data.product.price + "</td><td>" + data.product.qty + "</td><td>" + subtotal + "</td></tr>"
+            currentProducts.push(p)
+            id++;
+        })
+
+        const order = new Order({ user: uid, payid: payid, products: currentProducts })
+        await order.save()
+        await Cart.deleteMany({ user: uid })
+
+        var mailOptions = {
+            from: 'chintan.tops@gmail.com',
+            to: req.user.email,
+            subject: 'Order Confimation !!!',
+            html: "<table border='1'><tr><th>ID</th><th>Product Name</th><th>Price</th><th>Qty</th><th>Total</th></tr>" + rows + "<tr><td colspan='4'>Total</td><td>" + total + "</td></tr></table>"
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+                resp.send("Order created")
+            }
+        });
+
+    } catch (error) {
+        console.log(error);
+
+    }
 })
 module.exports = router

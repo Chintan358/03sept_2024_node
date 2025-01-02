@@ -187,9 +187,13 @@ router.get("/deleteProduct", async (req, resp) => {
 
 //*************product end*************** */
 
+const Order = require("../model/orders")
 router.get("/orders", async (req, resp) => {
     try {
-        resp.render("order")
+        const orderData = await Order.find().populate("user")
+
+
+        resp.render("order", { orderData: orderData })
     } catch (error) {
 
     }
